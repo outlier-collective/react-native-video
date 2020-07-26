@@ -34,6 +34,7 @@ static int const RCTVideoUnset = -1;
   RCTVideoPlayerViewController *_playerViewController;
   NSURL *_videoURL;
   UIView *_subview;
+  
   /* Required to publish events */
   RCTEventDispatcher *_eventDispatcher;
   BOOL _playbackRateObserverRegistered;
@@ -91,7 +92,7 @@ static int const RCTVideoUnset = -1;
 {
   if ((self = [super init])) {
     _eventDispatcher = eventDispatcher;
-	  _automaticallyWaitsToMinimizeStalling = YES;
+      _automaticallyWaitsToMinimizeStalling = YES;
     _playbackRateObserverRegistered = NO;
     _isExternalPlaybackActiveObserverRegistered = NO;
     _playbackStalled = NO;
@@ -153,13 +154,14 @@ static int const RCTVideoUnset = -1;
     
     viewController.view.frame = self.bounds;
     viewController.player = player;
-
+    
     if (_subview) {
       [viewController.contentOverlayView addSubview:_subview];
       viewController.contentOverlayView.frame = self.bounds;
       _subview.frame = self.bounds;
     }
-
+    
+    
     return viewController;
 }
 
@@ -730,17 +732,16 @@ static int const RCTVideoUnset = -1;
         if (!CGRectEqualToRect(oldRect, newRect)) {
           if (CGRectEqualToRect(newRect, [UIScreen mainScreen].bounds)) {
             NSLog(@"in fullscreen");
-
             if(self.onVideoFullscreenPlayerWillPresent) {
-                  self.onVideoFullscreenPlayerWillPresent(@{@"target": self.reactTag});
+                self.onVideoFullscreenPlayerWillPresent(@{@"target": self.reactTag});
             }
             [self.reactViewController.view setFrame:[UIScreen mainScreen].bounds];
             [self.reactViewController.view setNeedsLayout];
           } else {
-            if(self.onVideoFullscreenPlayerDidDismiss) {
-                    self.onVideoFullscreenPlayerDidDismiss(@{@"target": self.reactTag});
-            }
-            NSLog(@"not fullscreen");
+              if(self.onVideoFullscreenPlayerDidDismiss) {
+                  self.onVideoFullscreenPlayerDidDismiss(@{@"target": self.reactTag});
+              }
+              NSLog(@"not fullscreen");
           }
         }
 
@@ -864,7 +865,7 @@ static int const RCTVideoUnset = -1;
   } else if (_pipController && !_pictureInPicture && [_pipController isPictureInPictureActive]) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [_pipController stopPictureInPicture];
-	});
+    });
   }
   #endif
 }
@@ -879,11 +880,11 @@ static int const RCTVideoUnset = -1;
 }
 
 - (void)setupPipController {
-  // if (!_pipController && _playerLayer && [AVPictureInPictureController isPictureInPictureSupported]) {
-  //   // Create new controller passing reference to the AVPlayerLayer
-  //   _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:_playerLayer];
-  //   _pipController.delegate = self;
-  // }
+//  if (!_pipController && _playerLayer && [AVPictureInPictureController isPictureInPictureSupported]) {
+//    // Create new controller passing reference to the AVPlayerLayer
+//    _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:_playerLayer];
+//    _pipController.delegate = self;
+//  }
 }
 #endif
 
@@ -1028,8 +1029,8 @@ static int const RCTVideoUnset = -1;
 
 - (void)setAutomaticallyWaitsToMinimizeStalling:(BOOL)waits
 {
-	_automaticallyWaitsToMinimizeStalling = waits;
-	_player.automaticallyWaitsToMinimizeStalling = waits;
+    _automaticallyWaitsToMinimizeStalling = waits;
+    _player.automaticallyWaitsToMinimizeStalling = waits;
 }
 
 
@@ -1387,24 +1388,24 @@ static int const RCTVideoUnset = -1;
 
 - (void)usePlayerLayer
 {
-  // if( _player )
-  // {
-  //   _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-  //   _playerLayer.frame = self.bounds;
-  //   _playerLayer.needsDisplayOnBoundsChange = YES;
-    
-  //   // to prevent video from being animated when resizeMode is 'cover'
-  //   // resize mode must be set before layer is added
-  //   [self setResizeMode:_resizeMode];
-  //   [_playerLayer addObserver:self forKeyPath:readyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
-  //   _playerLayerObserverSet = YES;
-    
-  //   [self.layer addSublayer:_playerLayer];
-  //   self.layer.needsDisplayOnBoundsChange = YES;
-  //   #if TARGET_OS_IOS
-  //   [self setupPipController];
-  //   #endif
-  // }
+  if( _player )
+  {
+    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+    _playerLayer.frame = self.bounds;
+    _playerLayer.needsDisplayOnBoundsChange = YES;
+
+    // to prevent video from being animated when resizeMode is 'cover'
+    // resize mode must be set before layer is added
+    [self setResizeMode:_resizeMode];
+    [_playerLayer addObserver:self forKeyPath:readyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    _playerLayerObserverSet = YES;
+
+    [self.layer addSublayer:_playerLayer];
+    self.layer.needsDisplayOnBoundsChange = YES;
+    #if TARGET_OS_IOS
+    [self setupPipController];
+    #endif
+  }
 }
 
 - (void)setControls:(BOOL)controls
@@ -1509,7 +1510,7 @@ static int const RCTVideoUnset = -1;
 
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
-    _subview = view;
+   _subview = view;
   // We are early in the game and somebody wants to set a subview.
   // That can only be in the context of playerViewController.
   if( !_controls && !_playerLayer && !_playerViewController )
@@ -1520,8 +1521,9 @@ static int const RCTVideoUnset = -1;
   if( _controls )
   {
     view.frame = self.bounds;
-    _subview.frame = self.bounds;
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
+    _playerViewController.contentOverlayView.frame = self.bounds;
+    _subview.frame = self.bounds;
   }
   else
   {
